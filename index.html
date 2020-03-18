@@ -62,6 +62,10 @@
                                 <tr>
                                     {
                                         this.props.headers.map((title, idx) => {
+                                            if (this.state.sortby === idx) {
+                                                title += this.state.descending ? ' \u2191' : ' \u2193';
+                                            }
+
                                             return <th key={idx}>{title}</th>
                                         })
                                     }

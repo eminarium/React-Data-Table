@@ -65,6 +65,19 @@
                     })
                 }
 
+                _save = (e) => {
+                    e.preventDefault();
+
+                    var input = e.target.firstChild;
+                    var data = this.state.data.slice();
+                    data[this.state.edit.row][this.state.edit.cell] = input.value;
+
+                    this.setState({
+                        edit: null,
+                        data: data,
+                    })
+                }
+
                 render() {
                     return (
                         <table>
@@ -92,7 +105,7 @@
                                                         var edit = this.state.edit;
 
                                                         if (edit && edit.row === rid && edit.cell === cid) {
-                                                            content = <form><input type='text' value={content} /></form>
+                                                            content = <form onSubmit={this._save}><input type='text' defaultValue={content} /></form>
                                                         }
 
                                                         return <td key={cid} data-row={rid}>{content}</td>

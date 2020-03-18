@@ -6,6 +6,20 @@
         <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
         <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
         <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+        <style>
+
+            th {
+                border-style: solid;
+                border-width: 0px 0px 1px 0px;
+                font-weight: bold;
+            }
+
+            td {
+                padding-left: 25px;
+                padding-right: 25px;
+            }
+        </style>
     </head>
     <body>
         <div id="container"></div>
@@ -140,13 +154,50 @@
 
                 _renderToolbar = () => {
                     return (
-                        <button 
-                            onClick={this._toggleSearch}
-                            className='toolbar'
-                        >
-                            Search
-                        </button>
+                        <div>
+                            <button 
+                                onClick={this._toggleSearch}
+                                className='toolbar'
+                            >
+                                Search
+                            </button>
+
+                            <a
+                                onClick={this._download.bind(this, 'json')}
+                                href='data.json'
+                            >
+                                Export JSON
+                            </a>
+
+                            <a
+                                onClick={this._download.bind(this, 'csv')}
+                                href='data.csv'
+                            >
+                                Export CSV
+                            </a>
+                        </div>
                     )
+                }
+
+                _download = (format, ev) => {
+                    var contents = format === 'json'
+                        ? JSON.stringify(this.state.data)
+                        : this.state.data.reduce((result, row) => {
+                            return result
+                                    + row.reduce((rowresult, cell, idx) => {
+                                        return rowresult
+                                        + '"'
+                                        + cell.replace(/"/g, '""')
+                                        + '"'
+                                        + (idx < row.length - 1 ? ',' : '');
+                                    }, '')
+                                    + "\n";
+                        }, '');
+                    
+                    var URL = window.URL || window.webkitURL;
+                    var blob = new Blob([contents], {type: 'text/' + format});
+                    ev.target.href = URL.createObjectURL(blob);
+                    ev.target.download = 'data.'+format;
                 }
 
                 _renderTable = () => {

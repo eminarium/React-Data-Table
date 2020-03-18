@@ -35,6 +35,7 @@
                         data: this.props.initialData,
                         sortby: null,
                         descending: false,
+                        edit: null,
                     }
                 }
 
@@ -54,6 +55,15 @@
                         descending: descending,
                     })
                 }
+                
+                _showEditor = (e) => {
+                    this.setState({
+                        edit: {
+                            row: parseInt(e.target.dataset.row, 10),
+                            cell: e.target.cellIndex,
+                        }
+                    })
+                }
 
                 render() {
                     return (
@@ -71,14 +81,21 @@
                                     }
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody onDoubleClick={this._showEditor}>
                                 {
                                     this.state.data.map((row, rid) => {
                                         return (
                                             <tr key={rid}>
                                                 {
                                                     row.map((cell, cid) => {
-                                                        return <td key={cid}>{cell}</td>
+                                                        var content = cell;
+                                                        var edit = this.state.edit;
+
+                                                        if (edit && edit.row === rid && edit.cell === cid) {
+                                                            content = <form><input type='text' value={content} /></form>
+                                                        }
+
+                                                        return <td key={cid} data-row={rid}>{content}</td>
                                                     })
                                                 }
                                             </tr>

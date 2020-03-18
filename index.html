@@ -36,7 +36,10 @@
                         sortby: null,
                         descending: false,
                         edit: null,
+                        search: false,
                     }
+
+                    this._preSearchData = null;
                 }
 
                 _sort = (e) => {
@@ -78,7 +81,75 @@
                     })
                 }
 
-                render() {
+                _search = (e) => {
+                    var needle = e.target.value.toLowerCase();
+
+                    if (!needle) {
+                        this.setState({
+                            data: this._preSearchData
+                        })
+                        return;
+                    }
+
+                    var idx = e.target.dataset.idx;
+                    var searchData = this._preSearchData.filter((row) => {
+                        return row[idx].toString().toLowerCase().indexOf(needle) > -1;
+                    });
+                    this.setState({
+                        data: searchData,
+                    })
+                }
+
+                _renderSearch = () => {
+                    if (!this.state.search) {
+                        return null;
+                    }
+
+                    return (
+                        <tr onChange={this._search}>
+                            {
+                                this.props.headers.map((_ignore, idx) => {
+                                    return (
+                                        <td key={idx}>
+                                            <input type='text' data-idx={idx} />
+                                        </td>
+                                    )
+                                })
+                            }
+                        </tr>
+                    )
+                }
+
+                _toggleSearch = () => {
+
+                    if (this.state.search) {
+                        this.setState({
+                            data: this._preSearchData,
+                            search: false
+                        });
+                        this._preSearchData = null;
+                    } else {
+                        this._preSearchData = this.state.data;
+                        this.setState({
+                            search: true,
+                        })
+                    }
+
+                }
+
+
+                _renderToolbar = () => {
+                    return (
+                        <button 
+                            onClick={this._toggleSearch}
+                            className='toolbar'
+                        >
+                            Search
+                        </button>
+                    )
+                }
+
+                _renderTable = () => {
                     return (
                         <table>
                             <thead onClick={this._sort}>
@@ -95,6 +166,9 @@
                                 </tr>
                             </thead>
                             <tbody onDoubleClick={this._showEditor}>
+                                {
+                                    this._renderSearch()
+                                }
                                 {
                                     this.state.data.map((row, rid) => {
                                         return (
@@ -117,6 +191,15 @@
                                 }
                             </tbody>
                         </table>
+                    )
+                }
+
+                render() {
+                    return (
+                        <div>
+                            {this._renderToolbar()}
+                            {this._renderTable()}
+                        </div>
                     )
                 }
             }

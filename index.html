@@ -28,6 +28,14 @@
 
             class Excel extends React.Component {
 
+                constructor(props) {
+                    super(props);
+
+                    this.state = {
+                        data: this.props.initialData,
+                    }
+                }
+
                 render() {
                     return (
                         <table>
@@ -40,6 +48,21 @@
                                     }
                                 </tr>
                             </thead>
+                            <tbody>
+                                {
+                                    this.state.data.map((row, rid) => {
+                                        return (
+                                            <tr key={rid}>
+                                                {
+                                                    row.map((cell, cid) => {
+                                                        return <td key={cid}>{cell}</td>
+                                                    })
+                                                }
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
                         </table>
                     )
                 }
@@ -50,7 +73,10 @@
             var destination = document.getElementById("container");
 
             ReactDOM.render(
-                <Excel headers={headers}/>,
+                <Excel 
+                    headers={headers} 
+                    initialData = {data}
+                />,
                 destination
             )
         </script>
